@@ -29,3 +29,15 @@ Esse projeto de tecnologia de localização indoor oferece uma série de benefí
 - ```Demanda crescente por soluções IoT```: Com o crescimento contínuo da Internet das Coisas (IoT), soluções que oferecem conectividade e funcionalidades inteligentes, como a localização indoor via Wi-Fi, têm um mercado em expansão.
 
 Considerando esses aspectos, um sistema de localização indoor baseado em Wi-Fi pode ser não apenas comercialmente viável, mas também atrativo para diversas indústrias devido à sua eficiência, custo-benefício e potencial para melhorar experiências e serviços.
+
+## 🧑‍💼 Outras soluções
+
+- ```Aplicações móveis```: Integração com aplicativos móveis para fornecer informações de localização, navegação interna, ofertas personalizadas, entre outros.
+- ```Internet das Coisas (IoT)```: Conexão com dispositivos IoT para acionar ações com base na localização, como controle de iluminação, sistemas de segurança, termostatos, entre outros.
+- ```Analytics e Big Data```: Integração com plataformas de análise de dados para entender padrões de tráfego, comportamento do usuário e tomar decisões baseadas em dados para otimizar a experiência do usuário.
+- ```Realidade Aumentada (AR) e Realidade Virtual (VR)```: Combinação com tecnologias de AR/VR para criar experiências imersivas e informativas em ambientes internos.
+- ```Sistemas de gestão de edifícios```: Integração com sistemas de gestão de edifícios para otimizar a eficiência energética, controle de acesso e monitoramento de instalações.
+- ```Soluções de segurança```: Integração com sistemas de segurança para rastreamento de ativos, localização de pessoal em casos de emergência, e gestão de acessos.
+
+
+Essa capacidade de integração com outras soluções torna o sistema de localização indoor baseado em Wi-Fi extremamente versátil, permitindo que seja adaptado e expandido para atender a diversas necessidades e casos de uso em ambientes internos.
