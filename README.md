@@ -41,3 +41,35 @@ Considerando esses aspectos, um sistema de localização indoor baseado em Wi-Fi
 
 
 Essa capacidade de integração com outras soluções torna o sistema de localização indoor baseado em Wi-Fi extremamente versátil, permitindo que seja adaptado e expandido para atender a diversas necessidades e casos de uso em ambientes internos.
+
+
+## 🐍 Funcionamento do código python
+
+Este script em Python realiza a triangulação baseada em sinais Wi-Fi para estimar a posição de um dispositivo móvel em relação a pontos de acesso conhecidos.
+
+## Funcionalidades
+
+- **`triangulacao(x1, y1, rssi1, x2, y2, rssi2, x3, y3, rssi3)`**: Calcula a localização aproximada do dispositivo com base nos sinais recebidos por três pontos de acesso Wi-Fi.
+- **`rssiParaDistancia(rssi)`** e **`distanciaParaRssi(distancia)`**: Converte entre intensidade de sinal (RSSI) e distância.
+- **`compararMac(redes, mac)`**: Encontra a posição (X, Y) associada a um endereço MAC na lista de redes.
+
+## Uso
+
+1. Configure o Firebase Admin SDK com suas credenciais.
+2. Defina os pontos de acesso e suas posições na lista `redes`.
+3. Execute o script para obter a localização aproximada do dispositivo.
+
+## Requisitos
+
+- Python 3.x
+- Firebase Admin SDK
+
+## Configuração
+
+1. Instale o Firebase Admin SDK: `pip install firebase-admin`
+2. Adicione suas credenciais do Firebase ao arquivo `esp8266.json`.
+
+## Como Executar
+
+```bash
+python location.py
