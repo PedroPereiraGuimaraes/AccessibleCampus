@@ -23,10 +23,14 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
+// Definições de constantes
 const int MAX_NETWORKS = 50;
 const int MAX_RSSI_VALUES = 50;
+
+// Intervalo de medição
 const int MEASURE_INTERVAL = 50;
 
+// Estrutura para armazenar informações da rede
 struct Network {
   String macAddress;
   String bssid;
@@ -35,13 +39,14 @@ struct Network {
   float avgRssi;
 };
 
+// Array de redes e contadores
 Network networks[MAX_NETWORKS];
 int numNetworks = 0;
 unsigned long sendDataPrevMillis = 0;
 unsigned long count = 0;
 
+// Função para adicionar uma nova rede à estrutura de dados
 void addNetwork(String mac, String bssid) {
-  // Função para inserir informações de uma nova rede na estrutura de dados
   if (numNetworks < MAX_NETWORKS) {
     networks[numNetworks].macAddress = mac;
     networks[numNetworks].bssid = bssid;
@@ -76,6 +81,7 @@ void setup() {
   addNetwork("B4:79:C8:78:B1:C8", "Inatel-BRDC-V");
   addNetwork("E8:1D:A8:30:F1:E8", "Inatel-BRDC-V");
 
+  // Conexão com Wi-Fi
   Serial.print("Connecting to Wi-Fi");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   unsigned long ms = millis();
@@ -87,12 +93,14 @@ void setup() {
     }
   }
 
+  // Verifica se conectou com sucesso
   Serial.println();
   Serial.print("Connected with IP: ");
   Serial.println(WiFi.localIP());
   Serial.println();
   Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
 
+  // Configuração do Firebase
   config.api_key = API_KEY;
   auth.user.email = USER_EMAIL;
   auth.user.password = USER_PASSWORD;
@@ -105,9 +113,8 @@ void setup() {
   config.timeout.serverResponse = 10 * 1000;
 }
 
+// Função para enviar dados para o Firebase
 void sendDataToFirebase(String mac[], float rssi[]) {
-
-  // Função para enviar dados para o Firebase
   sendDataPrevMillis = millis();
 
   for (int i = 0; i < 3; i++) {
@@ -120,15 +127,15 @@ void sendDataToFirebase(String mac[], float rssi[]) {
   }
 }
 
+// Função para atualizar os dados da rede na estrutura de dados
 void updateNetworkData(String mac, String bssid, int rssi, String macMax[], float rssiMax[]) {
-
-  // Função para atualizar os dados da rede na estrutura de dados
   for (int j = 0; j < numNetworks; j++) {
     if (networks[j].macAddress == mac) {
       int numValues = networks[j].numValues;
       networks[j].rssiValues[numValues] = rssi;
       networks[j].numValues++;
 
+      // Lógica para calcular a média do RSSI
       int startIndex = numValues > MAX_RSSI_VALUES ? numValues - MAX_RSSI_VALUES : 0;
       float sumRssi = 0;
 
@@ -139,21 +146,17 @@ void updateNetworkData(String mac, String bssid, int rssi, String macMax[], floa
       if ((numValues - startIndex) > 0) {
         networks[j].avgRssi = sumRssi / (numValues - startIndex);
 
-
+        // Atualização dos top MAC e RSSI
         if (sumRssi / (numValues - startIndex) > rssiMax[0]) {
-          // Modificando os TOP RSSI
           rssiMax[2] = rssiMax[1];
           rssiMax[1] = rssiMax[0];
           rssiMax[0] = sumRssi / (numValues - startIndex);
-          // Modificando os TOP MAC
           macMax[2] = macMax[1];
           macMax[1] = macMax[0];
           macMax[0] = mac;
         } else if (sumRssi / (numValues - startIndex) > rssiMax[1]) {
-          // Modificando os TOP RSSI
           rssiMax[2] = rssiMax[1];
           rssiMax[1] = sumRssi / (numValues - startIndex);
-          // Modificando os TOP MAC
           macMax[2] = macMax[1];
           macMax[1] = mac;
         } else if (sumRssi / (numValues - startIndex) > rssiMax[2]) {
@@ -168,12 +171,11 @@ void updateNetworkData(String mac, String bssid, int rssi, String macMax[], floa
   }
 }
 
+// Função para processar as redes WiFi escaneadas
 void processNetworks(int numNetworks) {
-
   float rssiMax[3] = { -300, -300, -300 };
   String macMax[3] = { "None", "None", "None" };
 
-  // Função para processar as redes WiFi escaneadas
   for (int i = 0; i < numNetworks; i++) {
     String mac = WiFi.BSSIDstr(i);
     String bssid = WiFi.SSID(i);
@@ -183,6 +185,7 @@ void processNetworks(int numNetworks) {
   }
 }
 
+// Função para escanear as redes WiFi e rodar a lógica de processamento
 void loop() {
   int numNetworks = WiFi.scanNetworks();
   if (numNetworks == 0) {
