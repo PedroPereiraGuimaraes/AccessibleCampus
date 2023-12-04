@@ -1,15 +1,15 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-import pandas as pd
 import math
 
+# Função que realiza a triangulação com base nos dados de RSSI e localização das redes
 def triangulacao(x1, y1, rssi1, x2, y2, rssi2, x3, y3, rssi3):
-
     raio1 = rssiParaDistancia(rssi1)
     raio2 = rssiParaDistancia(rssi2)
     raio3 = rssiParaDistancia(rssi3)
 
+    # Cálculos para determinar as coordenadas do ponto atual
     a = 2 * (-x1 + x2)
     b = 2 * (-y1 + y2)
     c = (raio1 ** 2) - (raio2 ** 2) - (x1 ** 2) + (x2 ** 2) - (y1 ** 2) + (y2 ** 2)
@@ -20,13 +20,14 @@ def triangulacao(x1, y1, rssi1, x2, y2, rssi2, x3, y3, rssi3):
     x = 10000
     y = 10000
 
+    # Lógica para determinar as coordenadas com base na triangulação
     if ((e * a) - (b * d)) == 0 & ((b * d) - (a * e)) == 0:
         x = 0
         y = 0
-    elif((e*a) - (b*d)) == 0:
+    elif ((e * a) - (b * d)) == 0:
         y = ((c * d) - (a * f)) / ((b * d) - (a * e))
-        x=0
-    elif((b * d) - (a * e)) == 0:
+        x = 0
+    elif ((b * d) - (a * e)) == 0:
         x = ((c * e) - (f * b)) / ((e * a) - (b * d))
         y = 0
     else:
@@ -35,28 +36,32 @@ def triangulacao(x1, y1, rssi1, x2, y2, rssi2, x3, y3, rssi3):
 
     return x, y
 
+# Converte o RSSI para distância
 def rssiParaDistancia(rssi):
     a = -45
     w = (rssi - a) / -40
     distancia = 10 ** w
-
     return distancia
 
+# Converte distância para RSSI
 def distanciaParaRssi(distancia):
-    rssi = -50 - 40*math.log(distancia,10)
+    rssi = -50 - 40 * math.log(distancia, 10)
     return rssi
 
+# Compara o MAC fornecido com os MACs na lista de redes
 def compararMac(redes, mac):
-  for rede in redes:
-    if rede["mac"] == mac:
-      return rede["x"], rede["y"]
-  return None
+    for rede in redes:
+        if rede["mac"] == mac:
+            return rede["x"], rede["y"]
+    return None
 
+# Inicialização da conexão com o Firebase
 cred = credentials.Certificate("esp8266.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://esp8266-2dca6-default-rtdb.firebaseio.com/'
 })
 
+# Lista de redes e referências aos nós correspondentes no Firebase
 redes = [
   {"mac": "20:58:69:0E:AA:38", "nome": "WLL-Inatel", "x": "0", "y": "1"},
   {"mac": "30:87:D9:02:FA:C8", "nome": "WLL-Inatel", "x": "0", "y": "1"},
@@ -89,11 +94,12 @@ data1 = mac1.get()
 data2 = mac2.get()
 data3 = mac3.get()
 
-x1, y1 = compararMac(redes,data1["mac"])
-x2, y2 = compararMac(redes,data2["mac"])
-x3, y3 = compararMac(redes,data3["mac"])
+x1, y1 = compararMac(redes, data1.get("mac"))
+x2, y2 = compararMac(redes, data2.get("mac"))
+x3, y3 = compararMac(redes, data3.get("mac"))
 
-if(data1 != None or data1 != None or data1 != None):
-  x, y = triangulacao(int(x1),int(y1), data1["rssi"], int(x2),int(y2), data2["rssi"], int(x3),int(y3), data3["rssi"])
-  print(f"X: {x}m")
-  print(f"Y: {y}m")
+# Verificação e cálculo da triangulação caso os dados sejam válidos
+if data1 is not None or data2 is not None or data3 is not None:
+    x, y = triangulacao(int(x1), int(y1), data1["rssi"], int(x2), int(y2), data2["rssi"], int(x3), int(y3), data3["rssi"])
+    print(f"X: {round(x,3)} metros")
+    print(f"Y: {round(y,3)} metros")
